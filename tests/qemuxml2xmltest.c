@@ -1487,6 +1487,8 @@ mymain(void)
     DO_TEST_CAPS_LATEST("channel-qemu-vdagent");
     DO_TEST_CAPS_LATEST("channel-qemu-vdagent-features");
 
+    DO_TEST_CAPS_VER("sgx-epc", "6.2.0");
+
  cleanup:
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(fakerootdir);
