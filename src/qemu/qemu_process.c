@@ -3801,6 +3801,7 @@ qemuProcessDomainMemoryDefNeedHugepagesPath(const virDomainMemoryDef *mem,
     case VIR_DOMAIN_MEMORY_MODEL_NONE:
     case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
     case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
+    case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
     case VIR_DOMAIN_MEMORY_MODEL_LAST:
         /* None of these can be backed by hugepages. */
         return false;
@@ -3875,6 +3876,7 @@ qemuProcessNeedMemoryBackingPath(virDomainDef *def,
         case VIR_DOMAIN_MEMORY_MODEL_NONE:
         case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
         case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
+        case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
         case VIR_DOMAIN_MEMORY_MODEL_LAST:
             /* Backed by user provided path. Not stored in memory
              * backing dir anyway. */

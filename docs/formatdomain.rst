@@ -7921,6 +7921,11 @@ Example: usage of the memory devices
          <current unit='KiB'>524288</current>
        </target>
      </memory>
+     <memory model='sgx-epc'>
+       <target>
+         <size unit='KiB'>16384</size>
+       </target>
+     </memory>
    </devices>
    ...
 
@@ -7929,7 +7934,9 @@ Example: usage of the memory devices
    1.2.14` Provide ``nvdimm`` model that adds a Non-Volatile DIMM module.
    :since:`Since 3.2.0` Provide ``virtio-pmem`` model to add a paravirtualized
    persistent memory device. :since:`Since 7.1.0` Provide ``virtio-mem`` model
-   to add paravirtualized memory device. :since:`Since 7.9.0`
+   to add paravirtualized memory device. :since:`Since 7.9.0` Provide
+   ``sgx-epc`` model to add a SGX enclave page cache (EPC) memory to the guest.
+   :since:`Since 8.1.0`
 
 ``access``
    An optional attribute ``access`` ( :since:`since 3.2.0` ) that provides

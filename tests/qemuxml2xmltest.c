@@ -1463,6 +1463,8 @@ mymain(void)
                   QEMU_CAPS_DEVICE_VIRTIO_RNG,
                   QEMU_CAPS_OBJECT_RNG_RANDOM);
 
+    DO_TEST_CAPS_LATEST("sgx-epc");
+
  cleanup:
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(fakerootdir);

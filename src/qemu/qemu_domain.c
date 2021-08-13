@@ -8253,6 +8253,7 @@ qemuDomainUpdateMemoryDeviceInfo(virQEMUDriver *driver,
             break;
 
         case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
+        case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
         case VIR_DOMAIN_MEMORY_MODEL_NONE:
         case VIR_DOMAIN_MEMORY_MODEL_LAST:
             break;
@@ -8934,6 +8935,12 @@ qemuDomainDefValidateMemoryHotplugDevice(const virDomainMemoryDef *mem,
         }
         break;
 
+    case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("hotplug are not supported for the %s device"),
+                       virDomainMemoryModelTypeToString(mem->model));
+            return -1;
+
     case VIR_DOMAIN_MEMORY_MODEL_NONE:
     case VIR_DOMAIN_MEMORY_MODEL_LAST:
         return -1;
@@ -8969,7 +8976,7 @@ int
 qemuDomainDefValidateMemoryHotplug(const virDomainDef *def,
                                    const virDomainMemoryDef *mem)
 {
-    unsigned int nmems = def->nmems;
+    unsigned int hotplugNum = 0;
     unsigned long long hotplugSpace;
     unsigned long long hotplugMemory = 0;
     size_t i;
@@ -8977,15 +8984,27 @@ qemuDomainDefValidateMemoryHotplug(const virDomainDef *def,
     hotplugSpace = def->mem.max_memory - virDomainDefGetMemoryInitial(def);
 
     if (mem) {
-        nmems++;
+        hotplugNum++;
         hotplugMemory = mem->size;
 
         if (qemuDomainDefValidateMemoryHotplugDevice(mem, def) < 0)
             return -1;
     }
 
+    for (i = 0; i < def->nmems; i++) {
+        /* sgx epc memory does not support hotplug */
+        if (def->mems[i]->model != VIR_DOMAIN_MEMORY_MODEL_SGX_EPC) {
+            hotplugMemory += def->mems[i]->size;
+            hotplugNum++;
+            /* already existing devices don't need to be checked on hotplug */
+            if (!mem &&
+                qemuDomainDefValidateMemoryHotplugDevice(def->mems[i], def) < 0)
+                return -1;
+        }
+    }
+
     if (!virDomainDefHasMemoryHotplug(def)) {
-        if (nmems) {
+        if (hotplugNum) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("cannot use/hotplug a memory device when domain "
                              "'maxMemory' is not defined"));
@@ -9008,20 +9027,11 @@ qemuDomainDefValidateMemoryHotplug(const virDomainDef *def,
         }
     }
 
-    if (nmems > def->mem.memory_slots) {
+    if (hotplugNum > def->mem.memory_slots) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("memory device count '%u' exceeds slots count '%u'"),
-                       nmems, def->mem.memory_slots);
+                       hotplugNum, def->mem.memory_slots);
         return -1;
-    }
-
-    for (i = 0; i < def->nmems; i++) {
-        hotplugMemory += def->mems[i]->size;
-
-        /* already existing devices don't need to be checked on hotplug */
-        if (!mem &&
-            qemuDomainDefValidateMemoryHotplugDevice(def->mems[i], def) < 0)
-            return -1;
     }
 
     if (hotplugMemory > hotplugSpace) {

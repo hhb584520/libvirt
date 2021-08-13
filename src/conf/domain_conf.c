@@ -1417,6 +1417,7 @@ VIR_ENUM_IMPL(virDomainMemoryModel,
               "nvdimm",
               "virtio-pmem",
               "virtio-mem",
+              "sgx-epc",
 );
 
 VIR_ENUM_IMPL(virDomainShmemModel,
@@ -5615,6 +5616,7 @@ virDomainMemoryDefPostParse(virDomainMemoryDef *mem,
 
     case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
     case VIR_DOMAIN_MEMORY_MODEL_DIMM:
+    case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
     case VIR_DOMAIN_MEMORY_MODEL_NONE:
     case VIR_DOMAIN_MEMORY_MODEL_LAST:
         break;
@@ -14556,6 +14558,7 @@ virDomainMemorySourceDefParseXML(xmlNodePtr node,
         def->nvdimmPath = virXPathString("string(./path)", ctxt);
         break;
 
+    case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
     case VIR_DOMAIN_MEMORY_MODEL_NONE:
     case VIR_DOMAIN_MEMORY_MODEL_LAST:
         break;
@@ -14624,6 +14627,7 @@ virDomainMemoryTargetDefParseXML(xmlNodePtr node,
     case VIR_DOMAIN_MEMORY_MODEL_NONE:
     case VIR_DOMAIN_MEMORY_MODEL_DIMM:
     case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
+    case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
     case VIR_DOMAIN_MEMORY_MODEL_LAST:
         break;
     }
@@ -16413,6 +16417,7 @@ virDomainMemoryFindByDefInternal(virDomainDef *def,
                 continue;
             break;
 
+        case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
         case VIR_DOMAIN_MEMORY_MODEL_NONE:
         case VIR_DOMAIN_MEMORY_MODEL_LAST:
             break;
@@ -25857,6 +25862,7 @@ virDomainMemorySourceDefFormat(virBuffer *buf,
         virBufferEscapeString(&childBuf, "<path>%s</path>\n", def->nvdimmPath);
         break;
 
+    case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
     case VIR_DOMAIN_MEMORY_MODEL_NONE:
     case VIR_DOMAIN_MEMORY_MODEL_LAST:
         break;
