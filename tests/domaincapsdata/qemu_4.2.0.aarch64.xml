@@ -171,5 +171,6 @@
     <backingStoreInput supported='yes'/>
     <backup supported='no'/>
     <sev supported='no'/>
+    <sgx supported='no'/>
   </features>
 </domainCapabilities>

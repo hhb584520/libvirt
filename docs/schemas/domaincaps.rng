@@ -270,6 +270,9 @@
       <optional>
         <ref name="sev"/>
       </optional>
+      <optional>
+        <ref name='sgx'/>
+      </optional>
     </element>
   </define>
 
@@ -330,7 +333,24 @@
     </element>
   </define>
 
-  <define name="value">
+  <define name='sgx'>
+    <element name='sgx'>
+      <ref name='supported'/>
+      <optional>
+        <element name='flc'>
+          <data type='string'/>
+        </element>
+        <element name='epc_size'>
+          <attribute name="unit">
+            <value>KiB</value>
+          </attribute>
+          <data type='unsignedInt'/>
+        </element>
+      </optional>
+    </element>
+  </define>
+
+  <define name='value'>
     <zeroOrMore>
       <element name="value">
         <text/>

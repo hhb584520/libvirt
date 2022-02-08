@@ -222,5 +222,6 @@
     <backingStoreInput supported='no'/>
     <backup supported='no'/>
     <sev supported='no'/>
+    <sgx supported='no'/>
   </features>
 </domainCapabilities>

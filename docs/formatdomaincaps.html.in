@@ -598,6 +598,10 @@
       &lt;cbitpos&gt;47&lt;/cbitpos&gt;
       &lt;reduced-phys-bits&gt;1&lt;/reduced-phys-bits&gt;
     &lt;/sev&gt;
+    &lt;sgx&gt;
+      &lt;flc&gt;no&lt;/flc&gt;
+      &lt;epc_size&gt;1&lt;/epc_size&gt;
+    &lt;/sgx&gt;
   &lt;/features&gt;
 &lt;/domainCapabilities&gt;
 </pre>
@@ -687,6 +691,28 @@
       <dt><code>maxESGuests</code></dt>
       <dd>The maximum number of SEV-ES guests that can be launched on the host.
       This value may be configurable in the firmware for some hosts.</dd>
+    </dl>
+
+    <h4><a id="elementsSGX">SGX capabilities</a></h4>
+
+    <p>Intel Software Guard Extensions (Intel SGX) capabilities are exposed under
+    the <code>sgx</code> element.
+    Intel SGX helps protect data in use via unique application isolation technology.
+    Protect selected code and data from modification using hardened enclaves with
+    Intel SGX.</p>
+
+    <p>
+      For more details on the SGX feature, please follow resources in the
+      SGX developer's document store. In order to use SGX with libvirt have
+      a look at <a href="formatdomain.html#memory-devices">SGX in domain XML</a>
+    </p>
+
+    <dl>
+      <dt><code>flc</code></dt>
+      <dd>FLC (Flexible Launch Control), not strictly part of SGX2, but was not part
+      of original SGX hardware either.</dd>
+      <dt><code>epc_size</code></dt>
+      <dd>The size of the SGX enclave page cache (called EPC).</dd>
     </dl>
 
   </body>

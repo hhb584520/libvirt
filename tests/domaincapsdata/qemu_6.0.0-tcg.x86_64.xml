@@ -236,5 +236,6 @@
       <maxGuests>59</maxGuests>
       <maxESGuests>450</maxESGuests>
     </sev>
+    <sgx supported='no'/>
   </features>
 </domainCapabilities>
