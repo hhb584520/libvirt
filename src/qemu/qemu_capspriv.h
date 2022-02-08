@@ -101,6 +101,10 @@ void
 virQEMUCapsSetSEVCapabilities(virQEMUCaps *qemuCaps,
                               virSEVCapability *capabilities);
 
+void
+virQEMUCapsSetSGXCapabilities(virQEMUCaps *qemuCaps,
+                              virSGXCapability *capabilities);
+
 int
 virQEMUCapsProbeCPUDefinitionsTest(virQEMUCaps *qemuCaps,
                                    qemuMonitor *mon);

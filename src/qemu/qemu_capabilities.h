@@ -641,6 +641,9 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_CALC_DIRTY_RATE, /* accepts calc-dirty-rate */
     QEMU_CAPS_DIRTYRATE_MODE , /* calc-dirty-rate accepts mode parameter */
 
+    /* 425 */
+    QEMU_CAPS_SGX_EPC, /* -object sgx-epc,... */
+
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
 
@@ -832,6 +835,9 @@ virQEMUCapsCPUFeatureFromQEMU(virQEMUCaps *qemuCaps,
 
 virSEVCapability *
 virQEMUCapsGetSEVCapabilities(virQEMUCaps *qemuCaps);
+
+virSGXCapabilityPtr
+virQEMUCapsGetSGXCapabilities(virQEMUCaps *qemuCaps);
 
 bool
 virQEMUCapsGetKVMSupportsSecureGuest(virQEMUCaps *qemuCaps) G_GNUC_NO_INLINE;
