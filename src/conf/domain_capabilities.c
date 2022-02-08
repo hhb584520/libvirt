@@ -100,6 +100,7 @@ virDomainCapsDispose(void *obj)
     virObjectUnref(caps->cpu.custom);
     virCPUDefFree(caps->cpu.hostModel);
     virSEVCapabilitiesFree(caps->sev);
+    virSGXCapabilitiesFree(caps->sgx);
 
     values = &caps->os.loader.values;
     for (i = 0; i < values->nvalues; i++)
@@ -622,6 +623,23 @@ virDomainCapsFeatureSEVFormat(virBuffer *buf,
     return;
 }
 
+static void
+virDomainCapsFeatureSGXFormat(virBuffer *buf,
+                              const virSGXCapability *sgx)
+{
+    if (!sgx) {
+        virBufferAddLit(buf, "<sgx supported='no'/>\n");
+    } else {
+        virBufferAddLit(buf, "<sgx supported='yes'>\n");
+        virBufferAdjustIndent(buf, 2);
+        virBufferAsprintf(buf, "<flc>%s</flc>\n", sgx->flc ? "yes" : "no");
+        virBufferAsprintf(buf, "<epc_size unit='KiB'>%d</epc_size>\n", sgx->epc_size);
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</sgx>\n");
+    }
+
+    return;
+}
 
 static void
 virDomainCapsFormatFeatures(const virDomainCaps *caps,
@@ -642,6 +660,7 @@ virDomainCapsFormatFeatures(const virDomainCaps *caps,
     }
 
     virDomainCapsFeatureSEVFormat(&childBuf, caps->sev);
+    virDomainCapsFeatureSGXFormat(&childBuf, caps->sgx);
 
     virXMLFormatElement(buf, "features", NULL, &childBuf);
 }
