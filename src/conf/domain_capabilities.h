@@ -284,3 +284,8 @@ void
 virSEVCapabilitiesFree(virSEVCapability *capabilities);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virSEVCapability, virSEVCapabilitiesFree);
+
+void
+virSGXCapabilitiesFree(virSGXCapability *capabilities);
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virSGXCapability, virSGXCapabilitiesFree);
