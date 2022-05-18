@@ -242,5 +242,9 @@
     <backingStoreInput supported='yes'/>
     <backup supported='yes'/>
     <sev supported='no'/>
+    <sgx supported='yes'>
+      <flc>no</flc>
+      <epc_size unit='KiB'>1</epc_size>
+    </sgx>
   </features>
 </domainCapabilities>
