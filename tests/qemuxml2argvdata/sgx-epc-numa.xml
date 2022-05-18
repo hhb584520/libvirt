@@ -1,0 +1,50 @@
+<domain type='qemu'>
+  <name>QEMUGuest1</name>
+  <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>219100</memory>
+  <currentMemory unit='KiB'>219100</currentMemory>
+  <vcpu placement='static'>2</vcpu>
+  <cpu>
+    <numa>
+      <cell id="0" cpus="0" memory="109550" unit="KiB"/>
+      <cell id="1" cpus="1" memory="109550" unit="KiB"/>
+    </numa>
+  </cpu>
+  <os>
+    <type arch='x86_64' machine='q35'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <controller type='pci' index='0' model='pcie-root'/>
+    <controller type='usb' index='0' model='none'/>
+    <controller type='sata' index='0'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x1f' function='0x2'/>
+    </controller>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
+    <audio id='1' type='none'/>
+    <memory model='sgx-epc'>
+      <source>
+        <nodemask>0-1</nodemask>
+      </source>
+      <target>
+        <size unit='MiB'>64</size>
+        <node>0</node>
+      </target>
+    </memory>
+    <memory model='sgx-epc'>
+      <source>
+        <nodemask>2-3</nodemask>
+      </source>
+      <target>
+        <size unit='MiB'>16</size>
+        <node>1</node>
+      </target>
+    </memory>
+  </devices>
+</domain>
