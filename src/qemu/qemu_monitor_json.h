@@ -192,6 +192,10 @@ qemuMonitorJSONGetGICCapabilities(qemuMonitor *mon,
                                   virGICCapability **capabilities);
 
 int
+qemuMonitorJSONGetSGXCapabilities(qemuMonitor *mon,
+                                  virSGXCapability **capabilities);
+
+int
 qemuMonitorJSONGetSEVCapabilities(qemuMonitor *mon,
                                   virSEVCapability **capabilities);
 
