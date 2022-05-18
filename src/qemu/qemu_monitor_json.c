@@ -6445,6 +6445,119 @@ qemuMonitorJSONGetSEVCapabilities(qemuMonitor *mon,
     return 1;
 }
 
+
+/**
+ * qemuMonitorJSONGetSGXCapabilities:
+ * @mon: qemu monitor object
+ * @capabilities: pointer to pointer to a SGX capability structure to be filled
+ *
+ * This function queries and fills in INTEL's SGX platform-specific data.
+ * Note that from QEMU's POV both -object sgx-epc and query-sgx-capabilities
+ * can be present even if SGX is not available, which basically leaves us with
+ * checking for JSON "GenericError" in order to differentiate between compiled-in
+ * support and actual SGX support on the platform.
+ *
+ * Returns: -1 on error,
+ *           0 if SGX is not supported, and
+ *           1 if SGX is supported on the platform.
+ */
+int
+qemuMonitorJSONGetSGXCapabilities(qemuMonitor *mon,
+                                  virSGXCapability **capabilities)
+{
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
+    g_autoptr(virSGXCapability) capability = NULL;
+
+    virJSONValue *sections = NULL;
+    virJSONValue *caps;
+    bool flc = false;
+    bool sgx1 = false;
+    bool sgx2 = false;
+    unsigned long long section_size = 0;
+    unsigned long long size;
+    size_t i;
+
+    *capabilities = NULL;
+    capability = g_new0(virSGXCapability, 1);
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("query-sgx-capabilities", NULL)))
+        return -1;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        return -1;
+
+    /* QEMU has only compiled-in support of SGX */
+    if (qemuMonitorJSONHasError(reply, "GenericError"))
+        return 0;
+
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        return -1;
+
+    caps = virJSONValueObjectGetObject(reply, "return");
+
+    if (virJSONValueObjectGetBoolean(caps, "flc", &flc) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-sgx-capabilities reply was missing 'flc' field"));
+        return -1;
+    }
+    capability->flc = flc;
+
+    if (virJSONValueObjectGetBoolean(caps, "sgx1", &sgx1) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-sgx-capabilities reply was missing 'sgx1' field"));
+        return -1;
+    }
+    capability->sgx1 = sgx1;
+
+    if (virJSONValueObjectGetBoolean(caps, "sgx2", &sgx2) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-sgx-capabilities reply was missing 'sgx2' field"));
+        return -1;
+    }
+    capability->sgx2 = sgx2;
+
+    if (virJSONValueObjectGetNumberUlong(caps, "section-size", &section_size) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-sgx-capabilities reply was missing 'section-size' field"));
+        return -1;
+    }
+    capability->section_size = section_size/1024;
+
+    if (!(sections = virJSONValueObjectGetArray(caps, "sections"))) {
+        capability->nSections = 0;
+        capability->pSections = NULL;
+        VIR_INFO("Sections was not obtained, so QEMU version is 6.2.0");
+        *capabilities = g_steal_pointer(&capability);
+        return 1;
+    }
+
+    // Got the section, the QEMU version is above 7.0.0
+    capability->nSections = virJSONValueArraySize(sections);
+    capability->pSections = g_new0(virSection, capability->nSections + 1);
+
+    for (i = 0; i < capability->nSections; i++) {
+        virJSONValue *elem = virJSONValueArrayGet(sections, i);
+
+        if (virJSONValueObjectGetNumberUlong(elem, "size", &size) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("query-sgx-capabilities reply was missing 'size' field"));
+            return -1;
+        }
+        capability->pSections[i].size = size/1024;
+
+        if (virJSONValueObjectGetNumberUint(elem, "node", &(capability->pSections[i].node)) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("query-sgx-capabilities reply was missing 'node' field"));
+            return -1;
+        }
+    }
+
+    *capabilities = g_steal_pointer(&capability);
+    return 1;
+}
+
+
 static virJSONValue *
 qemuMonitorJSONBuildInetSocketAddress(const char *host,
                                       const char *port)
