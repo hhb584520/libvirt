@@ -255,6 +255,15 @@ qemuMonitorJSONAddFileHandleToSet(qemuMonitor *mon,
                                   int fdset,
                                   const char *opaque);
 
+int qemuMonitorJSONGetSGXCapabilities(qemuMonitor *mon,
+                                      virSGXCapability **capabilities);
+
+int qemuMonitorJSONMigrate(qemuMonitor *mon,
+                           unsigned int flags,
+                           const char *uri);
+int qemuMonitorJSONGetSpiceMigrationStatus(qemuMonitor *mon,
+                                           bool *spice_migrated);
+
 int
 qemuMonitorJSONRemoveFdset(qemuMonitor *mon,
                            unsigned int fdset);
