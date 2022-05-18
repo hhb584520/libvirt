@@ -100,6 +100,7 @@ virDomainCapsDispose(void *obj)
     virObjectUnref(caps->cpu.custom);
     virCPUDefFree(caps->cpu.hostModel);
     virSEVCapabilitiesFree(caps->sev);
+    virSGXCapabilitiesFree(caps->sgx);
 
     values = &caps->os.loader.values;
     for (i = 0; i < values->nvalues; i++)
@@ -622,6 +623,52 @@ virDomainCapsFeatureSEVFormat(virBuffer *buf,
     return;
 }
 
+static void
+virDomainCapsFeatureSGXFormat(virBuffer *buf,
+                              const virSGXCapability *sgx)
+{
+    size_t i;
+
+    if (!sgx) {
+        virBufferAddLit(buf, "<sgx supported='no'/>\n");
+    } else {
+        virBufferAddLit(buf, "<sgx supported='yes'>\n");
+        virBufferAdjustIndent(buf, 2);
+        if (sgx->flc) {
+            virBufferAsprintf(buf, "<flc>%s</flc>\n", "yes");
+        } else {
+            virBufferAsprintf(buf, "<flc>%s</flc>\n", "no");
+        }
+        if (sgx->sgx1) {
+            virBufferAsprintf(buf, "<sgx1>%s</sgx1>\n", "yes");
+        } else {
+            virBufferAsprintf(buf, "<sgx1>%s</sgx1>\n", "no");
+        }
+        if (sgx->sgx2) {
+            virBufferAsprintf(buf, "<sgx2>%s</sgx2>\n", "yes");
+        } else {
+            virBufferAsprintf(buf, "<sgx2>%s</sgx2>\n", "no");
+        }
+        virBufferAsprintf(buf, "<section_size unit='KiB'>%llu</section_size>\n", sgx->section_size);
+
+        if (sgx->nSections > 0) {
+            virBufferAddLit(buf, "<sections>\n");
+
+            for (i = 0; i < sgx->nSections; i++) {
+                virBufferAdjustIndent(buf, 2);
+                virBufferAsprintf(buf, "<section node='%u' ", sgx->pSections[i].node);
+                virBufferAsprintf(buf, "size='%llu'/>\n", sgx->pSections[i].size);
+                virBufferAdjustIndent(buf, -2);
+            }
+            virBufferAddLit(buf, "</sections>\n");
+        }
+
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</sgx>\n");
+    }
+
+    return;
+}
 
 static void
 virDomainCapsFormatFeatures(const virDomainCaps *caps,
@@ -642,6 +689,7 @@ virDomainCapsFormatFeatures(const virDomainCaps *caps,
     }
 
     virDomainCapsFeatureSEVFormat(&childBuf, caps->sev);
+    virDomainCapsFeatureSGXFormat(&childBuf, caps->sgx);
 
     virXMLFormatElement(buf, "features", NULL, &childBuf);
 }
