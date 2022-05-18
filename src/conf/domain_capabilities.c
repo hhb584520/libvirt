@@ -78,6 +78,16 @@ virSEVCapabilitiesFree(virSEVCapability *cap)
 }
 
 
+void
+virSGXCapabilitiesFree(virSGXCapability *cap)
+{
+    if (!cap)
+        return;
+
+    VIR_FREE(cap);
+}
+
+
 static void
 virDomainCapsDispose(void *obj)
 {
