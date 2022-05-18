@@ -3750,6 +3750,10 @@ qemuBuildMemoryBackendProps(virJSONValue **backendProps,
         if (systemMemory)
             disableCanonicalPath = true;
 
+    } else if (mem->model == VIR_DOMAIN_MEMORY_MODEL_SGX_EPC) {
+        backendType = "memory-backend-epc";
+        if (!priv->memPrealloc)
+            prealloc = true;
     } else if (useHugepage || mem->nvdimmPath || memAccess ||
         def->mem.source == VIR_DOMAIN_MEMORY_SOURCE_FILE) {
 
@@ -6962,6 +6966,7 @@ qemuBuildMachineCommandLine(virCommand *cmd,
     virCPUDef *cpu = def->cpu;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     size_t i;
+    int epcNum = 0;
 
     virCommandAddArg(cmd, "-machine");
     virBufferAdd(&buf, def->os.machine, -1);
@@ -7180,6 +7185,25 @@ qemuBuildMachineCommandLine(virCommand *cmd,
      */
     if (def->os.bios.useserial == VIR_TRISTATE_BOOL_YES) {
         virBufferAddLit(&buf, ",graphics=off");
+    }
+
+    /* add sgx epc memory to -machine parameter */
+    for (i = 0; i < def->nmems; i++) {
+        switch (def->mems[i]->model) {
+        case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
+            virBufferAsprintf(&buf, ",sgx-epc.%d.memdev=mem%s", epcNum++,
+                              def->mems[i]->info.alias);
+
+            break;
+
+        case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
+        case VIR_DOMAIN_MEMORY_MODEL_DIMM:
+        case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
+        case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
+        case VIR_DOMAIN_MEMORY_MODEL_NONE:
+        case VIR_DOMAIN_MEMORY_MODEL_LAST:
+            break;
+        }
     }
 
     virCommandAddArgBuffer(cmd, &buf);
@@ -7762,11 +7786,27 @@ qemuBuildMemoryDeviceCommandLine(virCommand *cmd,
         if (qemuBuildMemoryDimmBackendStr(cmd, def->mems[i], def, cfg, priv) < 0)
             return -1;
 
-        if (!(props = qemuBuildMemoryDeviceProps(cfg, priv, def, def->mems[i])))
-            return -1;
+        switch (def->mems[i]->model) {
+        case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
+        case VIR_DOMAIN_MEMORY_MODEL_DIMM:
+        case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
+        case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
+            if (!(props = qemuBuildMemoryDeviceProps(cfg, priv, def, def->mems[i])))
+                return -1;
 
-        if (qemuBuildDeviceCommandlineFromJSON(cmd, props, def, priv->qemuCaps) < 0)
-            return -1;
+            if (qemuBuildDeviceCommandlineFromJSON(cmd, props, def, priv->qemuCaps) < 0)
+                return -1;
+
+            break;
+
+        /* sgx epc memory will be added to -machine parameter, so skip here */
+        case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
+            break;
+
+        case VIR_DOMAIN_MEMORY_MODEL_NONE:
+        case VIR_DOMAIN_MEMORY_MODEL_LAST:
+            break;
+        }
     }
 
     return 0;
