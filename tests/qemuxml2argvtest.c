@@ -3461,6 +3461,9 @@ mymain(void)
     /* HVF guests should not work on Linux with KVM */
     DO_TEST_CAPS_LATEST_PARSE_ERROR("hvf-x86_64-q35-headless");
 
+    DO_TEST_CAPS_VER("sgx-epc", "6.2.0");
+    DO_TEST_CAPS_LATEST("sgx-epc-numa");
+
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(fakerootdir);
 
