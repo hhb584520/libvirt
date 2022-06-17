@@ -230,7 +230,13 @@
     <sev supported='no'/>
     <sgx supported='yes'>
       <flc>no</flc>
-      <epc_size unit='KiB'>1</epc_size>
+      <sgx1>yes</sgx1>
+      <sgx2>no</sgx2>
+      <section_size unit='KiB'>2</section_size>
+      <sections>
+        <section node="0" size="1024"/>
+        <section node="1" size="1024"/>
+      </sections>
     </sgx>
   </features>
 </domainCapabilities>

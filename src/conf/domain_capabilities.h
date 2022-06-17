@@ -192,11 +192,22 @@ struct _virSEVCapability {
     unsigned int max_es_guests;
 };
 
+typedef struct _virSection virSection;
+typedef virSection *virSectionPtr;
+struct _virSection {
+    unsigned long long size;
+    unsigned int node;
+};
+
 typedef struct _virSGXCapability virSGXCapability;
 typedef virSGXCapability *virSGXCapabilityPtr;
 struct _virSGXCapability {
     bool flc;
-    unsigned int epc_size;
+    unsigned long long section_size;
+    bool sgx1;
+    bool sgx2;
+    size_t nSections;
+    virSectionPtr pSections;
 };
 
 typedef enum {

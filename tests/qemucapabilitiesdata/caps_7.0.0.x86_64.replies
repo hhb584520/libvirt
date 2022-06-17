@@ -33325,8 +33325,20 @@
 {
   "return": {
     "sgx": true,
-    "section-size": 1024,
-    "flc": false
+    "flc": false,
+    "sgx1": true,
+    "sgx2": false,
+    "section-size": 2048,
+    "sections": [
+      {
+        "node": 0,
+        "size": 1024
+      },
+      {
+        "node": 1,
+        "size": 1024
+      }
+    ]
   },
   "id": "libvirt-51"
 }

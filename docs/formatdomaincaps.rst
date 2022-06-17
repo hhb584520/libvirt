@@ -519,9 +519,21 @@ capabilities. All features occur as children of the main ``features`` element.
          <cbitpos>47</cbitpos>
          <reduced-phys-bits>1</reduced-phys-bits>
        </sev>
-       <sgx>
+       <sgx supported='yes'>
          <flc>no</flc>
-         <epc_size>1</epc_size>
+         <section_size>2</section_size>
+         <sgx1>yes</sgx1>
+         <sgx2>no</sgx2>
+         <sections>
+          <section>
+            <node>0</node>
+            <size>1</size>
+          </section>
+          <section>
+            <node>1</node>
+            <size>1</size>
+          </section>
+         </sections>
        </sgx>
      </features>
    </domainCapabilities>
@@ -617,10 +629,18 @@ For more details on the SGX feature, please follow resources in the SGX develope
 document store. In order to use SGX with libvirt have a look at formatdomain.rst
 Memory devices.
 
-
 ``flc``
    FLC (Flexible Launch Control), not strictly part of SGX2, but was not part of
    original SGX hardware either.
 
-``epc_size``
+``section_size``
    The size of the SGX enclave page cache (called EPC).
+
+``sgx1``
+   the sgx version 1.
+
+``sgx2``
+   The sgx version 2.
+
+``sections``
+   The sections of the SGX enclave page cache (called EPC).

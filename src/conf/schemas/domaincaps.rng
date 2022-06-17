@@ -340,12 +340,34 @@
         <element name="flc">
           <data type="string"/>
         </element>
-        <element name="epc_size">
+        <element name="sgx1">
+          <data type="string"/>
+        </element>
+        <element name="sgx2">
+          <data type="string"/>
+        </element>
+        <element name="section_size">
           <attribute name="unit">
             <value>KiB</value>
           </attribute>
           <data type="unsignedInt"/>
         </element>
+        <optional>
+          <element name="sections">
+            <interleave>
+              <zeroOrMore>
+                <element name="section">
+                  <attribute name="node">
+                    <data type="string"/>
+                  </attribute>
+                  <attribute name="size">
+                    <data type="string"/>
+                  </attribute>
+                </element>
+              </zeroOrMore>
+            </interleave>
+          </element>
+        </optional>
       </optional>
     </element>
   </define>

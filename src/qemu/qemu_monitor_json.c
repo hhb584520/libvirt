@@ -6471,12 +6471,18 @@ qemuMonitorJSONGetSGXCapabilities(qemuMonitor *mon,
 {
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
+    g_autoptr(virJSONValue) sections = NULL;
+
     virJSONValue *caps;
     bool flc = false;
-    unsigned int section_size = 0;
+    bool sgx1 = false;
+    bool sgx2 = false;
+    unsigned long long section_size = 0;
     g_autoptr(virSGXCapability) capability = NULL;
 
+    size_t i;
     *capabilities = NULL;
+    capability = g_new0(virSGXCapability, 1);
 
     if (!(cmd = qemuMonitorJSONMakeCommand("query-sgx-capabilities", NULL)))
         return -1;
@@ -6498,16 +6504,57 @@ qemuMonitorJSONGetSGXCapabilities(qemuMonitor *mon,
                        _("query-sgx-capabilities reply was missing 'flc' field"));
         return -1;
     }
+    capability->flc = flc;
 
-    if (virJSONValueObjectGetNumberUint(caps, "section-size", &section_size) < 0) {
+
+    if (virJSONValueObjectGetBoolean(caps, "sgx1", &sgx1) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-sgx-capabilities reply was missing 'sgx1' field"));
+        return -1;
+    }
+    capability->sgx1 = sgx1;
+
+    if (virJSONValueObjectGetBoolean(caps, "sgx2", &sgx2) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-sgx-capabilities reply was missing 'sgx2' field"));
+        return -1;
+    }
+    capability->sgx2 = sgx2;
+
+    if (virJSONValueObjectGetNumberUlong(caps, "section-size", &section_size) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("query-sgx-capabilities reply was missing 'section-size' field"));
         return -1;
     }
+    capability->section_size = section_size/1024;
 
-    capability = g_new0(virSGXCapability, 1);
-    capability->flc = flc;
-    capability->epc_size = section_size/1024;
+    // TBD check QMP version begin
+
+    if (!(sections = virJSONValueObjectGetArray(caps, "sections"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-sgx-capabilities reply was missing 'section' field"));
+        return -1;
+    }
+
+    capability->nSections = virJSONValueArraySize(sections);
+    capability->pSections = g_new0(virSection, capability->nSections + 1);
+
+    for (i = 0; i < capability->nSections; i++) {
+        g_autofree char *section_name = NULL;
+        virJSONValue *elem = virJSONValueArrayGet(sections, i);
+
+        if (virJSONValueObjectGetNumberUlong(elem, "size", &(capability->pSections[i].size)) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("query-sgx-capabilities reply was missing 'size' field"));
+            return -1;
+        }
+        if (virJSONValueObjectGetNumberUint(elem, "node", &(capability->pSections[i].node)) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("query-sgx-capabilities reply was missing 'node' field"));
+            return -1;
+        }
+    }
+    // TBD check QMP version end
 
     *capabilities = g_steal_pointer(&capability);
     return 1;

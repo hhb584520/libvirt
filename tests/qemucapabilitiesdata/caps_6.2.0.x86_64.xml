@@ -3707,8 +3707,20 @@
   <machine type='tcg' name='pc-q35-2.5' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
   <machine type='tcg' name='pc-i440fx-3.0' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
   <machine type='tcg' name='pc-q35-2.11' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
-  <sgx>
+  <sgx supported='yes'>
     <flc>no</flc>
-    <epc_size>1</epc_size>
+    <section_size>2</section_size>
+    <sgx1>yes</sgx1>
+    <sgx2>no</sgx2>
+    <sections>
+      <section>
+        <node>0</node>
+        <size>1</size>
+      </section>
+      <section>
+        <node>1</node>
+        <size>1</size>
+      </section>
+    </sections>
   </sgx>
 </qemuCaps>

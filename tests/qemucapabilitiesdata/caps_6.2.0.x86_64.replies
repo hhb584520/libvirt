@@ -7459,15 +7459,15 @@
           "type": "bool"
         },
         {
+          "name": "flc",
+          "type": "bool"
+        },
+        {
           "name": "sgx1",
           "type": "bool"
         },
         {
           "name": "sgx2",
-          "type": "bool"
-        },
-        {
-          "name": "flc",
           "type": "bool"
         },
         {
@@ -32715,8 +32715,10 @@
 {
   "return": {
     "sgx": true,
-    "section-size": 1024,
-    "flc": false
+    "flc": false,
+    "sgx1": true,
+    "sgx2": false,
+    "section-size": 2048
   },
   "id": "libvirt-51"
 }
