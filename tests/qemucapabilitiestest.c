@@ -85,9 +85,11 @@ testQemuCaps(const void *opaque)
                                data->outputDir, data->prefix, data->version,
                                data->archName);
 
+
     if (!(mon = qemuMonitorTestNewFromFileFull(repliesFile, &data->driver, NULL,
                                                NULL)))
         return -1;
+
 
     if (qemuProcessQMPInitMonitor(qemuMonitorTestGetMonitor(mon)) < 0)
         return -1;

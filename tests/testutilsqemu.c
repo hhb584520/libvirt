@@ -359,7 +359,7 @@ qemuTestSetHostCPU(virQEMUDriver *driver,
     }
 }
 
-
+// TBD
 virQEMUCaps *
 qemuTestParseCapabilitiesArch(virArch arch,
                               const char *capsFile)
@@ -367,7 +367,7 @@ qemuTestParseCapabilitiesArch(virArch arch,
     g_autoptr(virQEMUCaps) qemuCaps = NULL;
     g_autofree char *binary = g_strdup_printf("/usr/bin/qemu-system-%s",
                                               virArchToString(arch));
-
+    printf("binary = %s\n", binary);
     if (!(qemuCaps = virQEMUCapsNewBinary(binary)) ||
         virQEMUCapsLoadCache(arch, qemuCaps, capsFile, true) < 0)
         return NULL;

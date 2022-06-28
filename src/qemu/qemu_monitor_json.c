@@ -6471,7 +6471,7 @@ qemuMonitorJSONGetSGXCapabilities(qemuMonitor *mon,
 {
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
-    g_autoptr(virJSONValue) sections = NULL;
+    virJSONValue *sections = NULL;
 
     virJSONValue *caps;
     bool flc = false;
@@ -6479,6 +6479,7 @@ qemuMonitorJSONGetSGXCapabilities(qemuMonitor *mon,
     bool sgx2 = false;
     unsigned long long section_size = 0;
     g_autoptr(virSGXCapability) capability = NULL;
+    unsigned long long size;
 
     size_t i;
     *capabilities = NULL;
@@ -6528,33 +6529,34 @@ qemuMonitorJSONGetSGXCapabilities(qemuMonitor *mon,
     }
     capability->section_size = section_size/1024;
 
-    // TBD check QMP version begin
-
     if (!(sections = virJSONValueObjectGetArray(caps, "sections"))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("query-sgx-capabilities reply was missing 'section' field"));
-        return -1;
+        capability->nSections = 0;
+        capability->pSections = NULL;
+        VIR_INFO("Sections was not obtained, so QEMU version is 6.2.0");
+        *capabilities = g_steal_pointer(&capability);
+        return 1;
     }
 
+    // Got the section, the QEMU version is above 7.0.0
     capability->nSections = virJSONValueArraySize(sections);
     capability->pSections = g_new0(virSection, capability->nSections + 1);
 
     for (i = 0; i < capability->nSections; i++) {
-        g_autofree char *section_name = NULL;
         virJSONValue *elem = virJSONValueArrayGet(sections, i);
 
-        if (virJSONValueObjectGetNumberUlong(elem, "size", &(capability->pSections[i].size)) < 0) {
+        if (virJSONValueObjectGetNumberUlong(elem, "size", &size) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("query-sgx-capabilities reply was missing 'size' field"));
             return -1;
         }
+        capability->pSections[i].size = size/1024;
+
         if (virJSONValueObjectGetNumberUint(elem, "node", &(capability->pSections[i].node)) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("query-sgx-capabilities reply was missing 'node' field"));
             return -1;
         }
     }
-    // TBD check QMP version end
 
     *capabilities = g_steal_pointer(&capability);
     return 1;
