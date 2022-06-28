@@ -85,21 +85,24 @@ testQemuCaps(const void *opaque)
                                data->outputDir, data->prefix, data->version,
                                data->archName);
 
+
     if (!(mon = qemuMonitorTestNewFromFileFull(repliesFile, &data->driver, NULL,
                                                NULL)))
         return -1;
 
+    printf("hhb testQemuCaps 1\n");
     if (qemuProcessQMPInitMonitor(qemuMonitorTestGetMonitor(mon)) < 0)
         return -1;
 
     binary = g_strdup_printf("/usr/bin/qemu-system-%s",
                              data->archName);
-
+    printf("hhb testQemuCaps 2\n");
     if (!(capsActual = virQEMUCapsNewBinary(binary)) ||
         virQEMUCapsInitQMPMonitor(capsActual,
                                   qemuMonitorTestGetMonitor(mon)) < 0)
         return -1;
 
+    printf("hhb testQemuCaps 3\n");
     if (virQEMUCapsGet(capsActual, QEMU_CAPS_KVM)) {
         qemuMonitorResetCommandID(qemuMonitorTestGetMonitor(mon));
 
@@ -123,9 +126,11 @@ testQemuCaps(const void *opaque)
         virQEMUCapsSetMicrocodeVersion(capsActual, fakeMicrocodeVersion);
     }
 
+    //printf("hhb testQemuCaps virQEMUCapsFormatCache start\n");
     if (!(actual = virQEMUCapsFormatCache(capsActual)))
         return -1;
 
+    //printf("hhb testQemuCaps virQEMUCapsFormatCache end\n");
     if (virTestCompareToFile(actual, capsFile) < 0)
         return -1;
 
@@ -142,6 +147,7 @@ testQemuCapsCopy(const void *opaque)
     g_autoptr(virQEMUCaps) copy = NULL;
     g_autofree char *actual = NULL;
 
+    printf("hhb testQemuCapsCopy hhb testQemuCapsCopy %s/%s_%s.%s.xml\n", data->outputDir, data->prefix, data->version, data->archName);
     capsFile = g_strdup_printf("%s/%s_%s.%s.xml",
                                data->outputDir, data->prefix, data->version,
                                data->archName);
@@ -150,14 +156,19 @@ testQemuCapsCopy(const void *opaque)
               virArchFromString(data->archName), capsFile)))
         return -1;
 
+    printf("hhb testQemuCapsCopy 1\n");
     if (!(copy = virQEMUCapsNewCopy(orig)))
         return -1;
 
+    printf("hhb testQemuCapsCopy 2\n");
     if (!(actual = virQEMUCapsFormatCache(copy)))
         return -1;
 
+    printf("hhb testQemuCapsCopy 3\n");
     if (virTestCompareToFile(actual, capsFile) < 0)
         return -1;
+
+    printf("hhb testQemuCapsCopy 4\n");
 
     return 0;
 }
@@ -184,11 +195,14 @@ doCapsTest(const char *inputDir,
     data->archName = archName;
     data->suffix = suffix;
 
+    printf("hhb doCapsTest 1 title=%s\n", title);
     if (virTestRun(title, testQemuCaps, data) < 0)
         data->ret = -1;
 
+    printf("hhb doCapsTest 2\n");
     if (virTestRun(copyTitle, testQemuCapsCopy, data) < 0)
         data->ret = -1;
+    printf("hhb doCapsTest 3\n");
 
     return 0;
 }
@@ -198,15 +212,15 @@ static int
 mymain(void)
 {
     testQemuData data;
-
+    printf("hhb mymain 1\n");
     virEventRegisterDefaultImpl();
-
+    printf("hhb mymain 2\n");
     if (testQemuDataInit(&data) < 0)
         return EXIT_FAILURE;
-
+    printf("hhb mymain 3\n");
     if (testQemuCapsIterate(".replies", doCapsTest, &data) < 0)
         return EXIT_FAILURE;
-
+    printf("hhb mymain 4\n");
     /*
      * Run "tests/qemucapsprobe /path/to/qemu/binary >foo.replies"
      * to generate updated or new *.replies data files.

@@ -521,18 +521,12 @@ capabilities. All features occur as children of the main ``features`` element.
        </sev>
        <sgx supported='yes'>
          <flc>no</flc>
-         <section_size>2</section_size>
          <sgx1>yes</sgx1>
          <sgx2>no</sgx2>
+         <section_size>2</section_size>
          <sections>
-          <section>
-            <node>0</node>
-            <size>1</size>
-          </section>
-          <section>
-            <node>1</node>
-            <size>1</size>
-          </section>
+           <section node='0' size='1'/>
+           <section node='1' size='1'/>
          </sections>
        </sgx>
      </features>

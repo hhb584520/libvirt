@@ -3709,18 +3709,8 @@
   <machine type='tcg' name='pc-q35-2.11' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
   <sgx supported='yes'>
     <flc>no</flc>
-    <section_size>2</section_size>
     <sgx1>yes</sgx1>
     <sgx2>no</sgx2>
-    <sections>
-      <section>
-        <node>0</node>
-        <size>1</size>
-      </section>
-      <section>
-        <node>1</node>
-        <size>1</size>
-      </section>
-    </sections>
+    <section_size unit='KiB'>2</section_size>
   </sgx>
 </qemuCaps>

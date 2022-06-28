@@ -78,7 +78,7 @@ fillQemuCaps(virDomainCaps *domCaps,
     g_autoptr(virQEMUCaps) qemuCaps = NULL;
     virDomainCapsLoader *loader = &domCaps->os.loader;
     virDomainVirtType virtType;
-
+    printf("hhb fillQemuCaps 1\n");
     if (fakeHostCPU(domCaps->arch) < 0)
         return -1;
 
@@ -98,13 +98,13 @@ fillQemuCaps(virDomainCaps *domCaps,
 
     if (!domCaps->machine)
         domCaps->machine = g_strdup(virQEMUCapsGetPreferredMachine(qemuCaps, virtType));
-
+    printf("hhb fillQemuCaps 1.1\n");
     if (virQEMUCapsFillDomainCaps(qemuCaps, domCaps->arch, domCaps,
                                   false,
                                   cfg->firmwares,
                                   cfg->nfirmwares) < 0)
         return -1;
-
+    printf("hhb fillQemuCaps 2\n");
     /* The function above tries to query host's VFIO capabilities by calling
      * qemuHostdevHostSupportsPassthroughVFIO() which, however, can't be
      * successfully mocked as they are not exposed as internal APIs. Therefore,
@@ -204,18 +204,21 @@ test_virDomainCapsFormat(const void *opaque)
     g_autofree char *path = NULL;
     g_autofree char *domCapsXML = NULL;
 
+    printf("hhb test_virDomainCapsFormat 1\n");
     path = g_strdup_printf("%s/domaincapsdata/%s.xml", abs_srcdir, data->name);
 
     if (!(domCaps = virDomainCapsNew(data->emulator, data->machine,
                                      virArchFromString(data->arch),
                                      data->type)))
         return -1;
-
+    printf("hhb test_virDomainCapsFormat 2 path = %s\n", path);
     switch (data->capsType) {
     case CAPS_NONE:
+        printf("hhb test_virDomainCapsFormat 2.1 path = %s\n", path);
         break;
 
     case CAPS_QEMU:
+        printf("hhb test_virDomainCapsFormat 2.2 path = %s\n", path);
 #if WITH_QEMU
         if (fillQemuCaps(domCaps, data->capsName, data->arch, data->machine,
                          data->capsOpaque) < 0)
@@ -224,22 +227,25 @@ test_virDomainCapsFormat(const void *opaque)
         break;
 
     case CAPS_LIBXL:
+        printf("hhb test_virDomainCapsFormat 2.3 path = %s\n", path);
 #if WITH_LIBXL
         if (fillXenCaps(domCaps) < 0)
             return -1;
 #endif
         break;
     case CAPS_BHYVE:
+        printf("hhb test_virDomainCapsFormat 2.4 path = %s\n", path);
 #if WITH_BHYVE
         if (fillBhyveCaps(domCaps, data->capsOpaque) < 0)
             return -1;
 #endif
         break;
     }
-
+    printf("hhb test_virDomainCapsFormat 3\n");
     if (!(domCapsXML = virDomainCapsFormat(domCaps)))
         return -1;
 
+    printf("hhb test_virDomainCapsFormat 4 domCapsXML = %s\n", domCapsXML);
     if (virTestCompareToFile(domCapsXML, path) < 0)
         return -1;
 
@@ -357,7 +363,7 @@ mymain(void)
     if (!cfg)
         return EXIT_FAILURE;
 #endif
-
+    printf("hhb domaincapstest mymain 2\n");
 #define DO_TEST(Name, Emulator, Machine, Arch, Type, CapsType) \
     do { \
         struct testData data = { \
@@ -371,7 +377,7 @@ mymain(void)
         if (virTestRun(Name, test_virDomainCapsFormat, &data) < 0) \
             ret = -1; \
     } while (0)
-
+printf("hhb domaincapstest mymain 2.1\n");
 #define DO_TEST_LIBXL(Name, Emulator, Machine, Arch, Type) \
     do { \
         struct testData data = { \
@@ -405,6 +411,7 @@ mymain(void)
     DO_TEST("empty", "/bin/emulatorbin", "my-machine-type",
             "x86_64", VIR_DOMAIN_VIRT_KVM, CAPS_NONE);
 
+printf("hhb domaincapstest mymain 2.2\n");
 #if WITH_QEMU
 
     virFileWrapperAddPrefix(SYSCONFDIR "/qemu/firmware",
@@ -413,7 +420,7 @@ mymain(void)
                             abs_srcdir "/qemufirmwaredata/usr/share/qemu/firmware");
     virFileWrapperAddPrefix("/home/user/.config/qemu/firmware",
                             abs_srcdir "/qemufirmwaredata/home/user/.config/qemu/firmware");
-
+    printf("hhb domaincapstest mymain 3\n");
     if (testQemuCapsIterate(".xml", doTestQemu, cfg) < 0)
         ret = -1;
 
@@ -456,7 +463,7 @@ mymain(void)
     bhyve_caps |= BHYVE_CAP_FBUF;
     DO_TEST_BHYVE("fbuf", "/usr/sbin/bhyve", &bhyve_caps, VIR_DOMAIN_VIRT_BHYVE);
 #endif /* WITH_BHYVE */
-
+    printf("hhb domaincapstest mymain 4\n");
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 

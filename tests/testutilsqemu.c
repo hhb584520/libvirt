@@ -359,7 +359,7 @@ qemuTestSetHostCPU(virQEMUDriver *driver,
     }
 }
 
-
+// TBD
 virQEMUCaps *
 qemuTestParseCapabilitiesArch(virArch arch,
                               const char *capsFile)
@@ -367,7 +367,7 @@ qemuTestParseCapabilitiesArch(virArch arch,
     g_autoptr(virQEMUCaps) qemuCaps = NULL;
     g_autofree char *binary = g_strdup_printf("/usr/bin/qemu-system-%s",
                                               virArchToString(arch));
-
+    printf("binary = %s\n", binary);
     if (!(qemuCaps = virQEMUCapsNewBinary(binary)) ||
         virQEMUCapsLoadCache(arch, qemuCaps, capsFile, true) < 0)
         return NULL;
@@ -783,7 +783,7 @@ testQemuCapsIterate(const char *suffix,
 
     if (!callback)
         return 0;
-
+    printf("hhb testQemuCapsIterate 1\n");
     /* Validate suffix */
     if (!STRPREFIX(suffix, ".")) {
         VIR_TEST_VERBOSE("malformed suffix '%s'", suffix);
@@ -792,7 +792,7 @@ testQemuCapsIterate(const char *suffix,
 
     if (virDirOpen(&dir, TEST_QEMU_CAPS_PATH) < 0)
         return -1;
-
+    printf("hhb testQemuCapsIterate 2\n");
     while ((rc = virDirRead(dir, &ent, TEST_QEMU_CAPS_PATH)) > 0) {
         g_autofree char *tmp = g_strdup(ent->d_name);
         char *version = NULL;
@@ -819,7 +819,7 @@ testQemuCapsIterate(const char *suffix,
          * as independent, null-terminated strings */
         archName[0] = '\0';
         archName++;
-
+        printf("hhb testQemuCapsIterate 3\n");
         /* Run the user-provided callback.
          *
          * We skip the dot that, as verified earlier, starts the suffix

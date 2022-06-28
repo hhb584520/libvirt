@@ -98,7 +98,7 @@ virQEMUDriverConfig *virQEMUDriverConfigNew(bool privileged,
                                               const char *root)
 {
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
-
+    printf("hhb virQEMUDriverConfigNew 1\n");
     if (virQEMUConfigInitialize() < 0)
         return NULL;
 
@@ -110,7 +110,7 @@ virQEMUDriverConfig *virQEMUDriverConfigNew(bool privileged,
     } else {
         cfg->uri = g_strdup(privileged ? "qemu:///system" : "qemu:///session");
     }
-
+    printf("hhb virQEMUDriverConfigNew 2\n");
     if (privileged) {
         if (virGetUserID(QEMU_USER, &cfg->user) < 0)
             return NULL;

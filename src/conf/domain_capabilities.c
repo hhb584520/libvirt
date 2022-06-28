@@ -629,41 +629,45 @@ virDomainCapsFeatureSGXFormat(virBuffer *buf,
 {
     size_t i;
 
-    virBufferAddLit(buf, "<sgx>\n");
-    virBufferAdjustIndent(buf, 2);
-    if (sgx->flc) {
-        virBufferAsprintf(buf, "<flc>%s</flc>\n", "yes");
+    if (!sgx) {
+        virBufferAddLit(buf, "<sgx supported='no'/>\n");
     } else {
-        virBufferAsprintf(buf, "<flc>%s</flc>\n", "no");
-    }
-    if (sgx->sgx1) {
-        virBufferAsprintf(buf, "<sgx1>%s</sgx1>\n", "yes");
-    } else {
-        virBufferAsprintf(buf, "<sgx1>%s</sgx1>\n", "no");
-    }
-    if (sgx->sgx2) {
-        virBufferAsprintf(buf, "<sgx2>%s</sgx2>\n", "yes");
-    } else {
-        virBufferAsprintf(buf, "<sgx2>%s</sgx2>\n", "no");
-    }
-    virBufferAsprintf(buf, "<section_size>%llu</section_size>\n", sgx->section_size);
-
-    if (sgx->nSections > 0) {
-        virBufferAddLit(buf, "<sections>\n");
-
-        for (i = 0; i < sgx->nSections; i++) {
-            virBufferAdjustIndent(buf, 2);
-            virBufferAsprintf(buf, "<section node='%u' ", sgx->pSections[i].node);
-            virBufferAsprintf(buf, "size='%llu' ", sgx->pSections[i].size);
-            virBufferAsprintf(buf, "unit='%s'>", "KiB");
-            virBufferAdjustIndent(buf, -2);
+        printf("hhb virDomainCapsFeatureSGXFormat 1\n");
+        virBufferAddLit(buf, "<sgx supported='yes'>\n");
+        virBufferAdjustIndent(buf, 2);
+        if (sgx->flc) {
+            virBufferAsprintf(buf, "<flc>%s</flc>\n", "yes");
+        } else {
+            virBufferAsprintf(buf, "<flc>%s</flc>\n", "no");
         }
-        virBufferAddLit(buf, "</sections>\n");
+        printf("hhb virDomainCapsFeatureSGXFormat 2\n");
+        if (sgx->sgx1) {
+            virBufferAsprintf(buf, "<sgx1>%s</sgx1>\n", "yes");
+        } else {
+            virBufferAsprintf(buf, "<sgx1>%s</sgx1>\n", "no");
+        }
+        if (sgx->sgx2) {
+            virBufferAsprintf(buf, "<sgx2>%s</sgx2>\n", "yes");
+        } else {
+            virBufferAsprintf(buf, "<sgx2>%s</sgx2>\n", "no");
+        }
+        virBufferAsprintf(buf, "<section_size unit='KiB'>%llu</section_size>\n", sgx->section_size);
+
+        if (sgx->nSections > 0) {
+            virBufferAddLit(buf, "<sections>\n");
+
+            for (i = 0; i < sgx->nSections; i++) {
+                virBufferAdjustIndent(buf, 2);
+                virBufferAsprintf(buf, "<section node='%u' ", sgx->pSections[i].node);
+                virBufferAsprintf(buf, "size='%llu'/>\n", sgx->pSections[i].size);
+                virBufferAdjustIndent(buf, -2);
+            }
+            virBufferAddLit(buf, "</sections>\n");
+        }
+
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</sgx>\n");
     }
-
-    virBufferAdjustIndent(buf, -2);
-    virBufferAddLit(buf, "</sgx>\n");
-
     return;
 }
 
@@ -698,7 +702,7 @@ virDomainCapsFormat(const virDomainCaps *caps)
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const char *virttype_str = virDomainVirtTypeToString(caps->virttype);
     const char *arch_str = virArchToString(caps->arch);
-
+    printf("hhb virDomainCapsFormat 1 arch_str = %s\n", arch_str);
     virBufferAddLit(&buf, "<domainCapabilities>\n");
     virBufferAdjustIndent(&buf, 2);
 
@@ -716,7 +720,7 @@ virDomainCapsFormat(const virDomainCaps *caps)
 
     virDomainCapsOSFormat(&buf, &caps->os);
     virDomainCapsCPUFormat(&buf, &caps->cpu);
-
+    printf("hhb virDomainCapsFormat 2 arch_str = %s\n", arch_str);
     virDomainCapsMemoryBackingFormat(&buf, &caps->memoryBacking);
 
     virBufferAddLit(&buf, "<devices>\n");
@@ -729,12 +733,12 @@ virDomainCapsFormat(const virDomainCaps *caps)
     virDomainCapsDeviceRNGFormat(&buf, &caps->rng);
     virDomainCapsDeviceFilesystemFormat(&buf, &caps->filesystem);
     virDomainCapsDeviceTPMFormat(&buf, &caps->tpm);
-
+    printf("hhb virDomainCapsFormat 2.1 arch_str = %s\n", arch_str);
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</devices>\n");
-
+    // TBD
     virDomainCapsFormatFeatures(caps, &buf);
-
+    printf("hhb virDomainCapsFormat 3 arch_str = %s\n", arch_str);
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</domainCapabilities>\n");
 

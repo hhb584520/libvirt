@@ -203,9 +203,9 @@ typedef struct _virSGXCapability virSGXCapability;
 typedef virSGXCapability *virSGXCapabilityPtr;
 struct _virSGXCapability {
     bool flc;
-    unsigned long long section_size;
     bool sgx1;
     bool sgx2;
+    unsigned long long section_size;
     size_t nSections;
     virSectionPtr pSections;
 };
