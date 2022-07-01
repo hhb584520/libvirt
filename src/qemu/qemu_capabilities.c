@@ -6688,6 +6688,21 @@ virQEMUCapsFillDomainFeatureS390PVCaps(virQEMUCaps *qemuCaps,
     }
 }
 
+/**
+ * virQEMUCapsFillDomainFeatureSGXCaps:
+ * @qemuCaps: QEMU capabilities
+ * @domCaps: domain capabilities
+ *
+ * Take the information about SGX capabilities that has been obtained
+ * using the 'query-sgx-capabilities' QMP command and stored in @qemuCaps
+ * and convert it to a form suitable for @domCaps.
+ */
+static void
+virQEMUCapsFillDomainFeatureSGXCaps(virQEMUCaps *qemuCaps,
+                                    virDomainCaps *domCaps)
+{
+    virQEMUCapsSGXInfoCopy(&domCaps->sgx, qemuCaps->sgxCapabilities);
+}
 
 int
 virQEMUCapsFillDomainCaps(virQEMUCaps *qemuCaps,
@@ -6740,6 +6755,7 @@ virQEMUCapsFillDomainCaps(virQEMUCaps *qemuCaps,
     virQEMUCapsFillDomainFeatureGICCaps(qemuCaps, domCaps);
     virQEMUCapsFillDomainFeatureSEVCaps(qemuCaps, domCaps);
     virQEMUCapsFillDomainFeatureS390PVCaps(qemuCaps, domCaps);
+    virQEMUCapsFillDomainFeatureSGXCaps(qemuCaps, domCaps);
 
     return 0;
 }
