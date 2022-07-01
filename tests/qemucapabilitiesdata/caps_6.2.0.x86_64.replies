@@ -7459,15 +7459,15 @@
           "type": "bool"
         },
         {
+          "name": "flc",
+          "type": "bool"
+        },
+        {
           "name": "sgx1",
           "type": "bool"
         },
         {
           "name": "sgx2",
-          "type": "bool"
-        },
-        {
-          "name": "flc",
           "type": "bool"
         },
         {
@@ -32708,6 +32708,22 @@
 }
 
 {
+  "execute": "query-sgx-capabilities",
+  "id": "libvirt-51"
+}
+
+{
+  "return": {
+    "sgx": true,
+    "flc": false,
+    "sgx1": true,
+    "sgx2": false,
+    "section-size": 2048
+  },
+  "id": "libvirt-51"
+}
+
+{
   "execute": "query-cpu-model-expansion",
   "arguments": {
     "type": "static",
@@ -32715,7 +32731,7 @@
       "name": "host"
     }
   },
-  "id": "libvirt-51"
+  "id": "libvirt-52"
 }
 
 {
@@ -33048,7 +33064,7 @@
       }
     }
   },
-  "id": "libvirt-51"
+  "id": "libvirt-52"
 }
 
 {
@@ -33062,7 +33078,7 @@
       }
     }
   },
-  "id": "libvirt-52"
+  "id": "libvirt-53"
 }
 
 {
@@ -33395,7 +33411,7 @@
       }
     }
   },
-  "id": "libvirt-52"
+  "id": "libvirt-53"
 }
 
 {
