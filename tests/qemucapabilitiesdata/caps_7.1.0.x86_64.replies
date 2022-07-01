@@ -34007,6 +34007,19 @@
 }
 
 {
+  "execute": "query-sgx-capabilities",
+  "id": "libvirt-51"
+}
+
+{
+  "id": "libvirt-51",
+  "error": {
+    "class": "GenericError",
+    "desc": "SGX is not enabled in KVM"
+  }
+}
+
+{
   "execute": "query-cpu-model-expansion",
   "arguments": {
     "type": "static",
@@ -34014,7 +34027,7 @@
       "name": "host"
     }
   },
-  "id": "libvirt-51"
+  "id": "libvirt-52"
 }
 
 {
@@ -34352,7 +34365,7 @@
       }
     }
   },
-  "id": "libvirt-51"
+  "id": "libvirt-52"
 }
 
 {
@@ -34366,7 +34379,7 @@
       }
     }
   },
-  "id": "libvirt-52"
+  "id": "libvirt-53"
 }
 
 {
@@ -34704,7 +34717,7 @@
       }
     }
   },
-  "id": "libvirt-52"
+  "id": "libvirt-53"
 }
 
 {
