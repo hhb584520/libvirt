@@ -219,6 +219,7 @@
   <flag name='chardev.qemu-vdagent'/>
   <flag name='usb-host.guest-resets-all'/>
   <flag name='migration.blocked-reasons'/>
+  <flag name='sgx-epc'/>
   <version>6002000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100244</microcodeVersion>
@@ -3687,4 +3688,10 @@
   <machine type='tcg' name='pc-q35-2.5' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
   <machine type='tcg' name='pc-i440fx-3.0' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
   <machine type='tcg' name='pc-q35-2.11' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
+  <sgx supported='yes'>
+    <flc>no</flc>
+    <sgx1>yes</sgx1>
+    <sgx2>no</sgx2>
+    <section_size unit='KiB'>2</section_size>
+  </sgx>
 </qemuCaps>

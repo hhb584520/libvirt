@@ -653,6 +653,9 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_USB_HOST_GUESTS_RESETS_ALL, /* -device usb-host.guest-resets-all */
     QEMU_CAPS_MIGRATION_BLOCKED_REASONS, /* query-migrate returns 'blocked-reasons */
 
+    /* 435 */
+    QEMU_CAPS_SGX_EPC, /* -object sgx-epc,... */
+
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
 
@@ -844,6 +847,9 @@ virQEMUCapsCPUFeatureFromQEMU(virQEMUCaps *qemuCaps,
 
 virSEVCapability *
 virQEMUCapsGetSEVCapabilities(virQEMUCaps *qemuCaps);
+
+virSGXCapability *
+virQEMUCapsGetSGXCapabilities(virQEMUCaps *qemuCaps);
 
 bool
 virQEMUCapsGetKVMSupportsSecureGuest(virQEMUCaps *qemuCaps) G_NO_INLINE;
