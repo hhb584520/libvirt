@@ -1443,6 +1443,7 @@ VIR_ENUM_IMPL(virDomainMemoryModel,
               "nvdimm",
               "virtio-pmem",
               "virtio-mem",
+              "sgx-epc",
 );
 
 VIR_ENUM_IMPL(virDomainShmemModel,
@@ -13154,6 +13155,20 @@ virDomainMemorySourceDefParseXML(xmlNodePtr node,
         def->nvdimmPath = virXPathString("string(./path)", ctxt);
         break;
 
+    case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
+        if ((nodemask = virXPathString("string(./nodemask)", ctxt))) {
+            if (virBitmapParse(nodemask, &def->sourceNodes,
+                               VIR_DOMAIN_CPUMASK_LEN) < 0)
+                return -1;
+
+            if (virBitmapIsAllClear(def->sourceNodes)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("Invalid value of 'nodemask': %s"), nodemask);
+                return -1;
+            }
+        }
+        break;
+
     case VIR_DOMAIN_MEMORY_MODEL_NONE:
     case VIR_DOMAIN_MEMORY_MODEL_LAST:
         break;
@@ -13222,6 +13237,7 @@ virDomainMemoryTargetDefParseXML(xmlNodePtr node,
     case VIR_DOMAIN_MEMORY_MODEL_NONE:
     case VIR_DOMAIN_MEMORY_MODEL_DIMM:
     case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
+    case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
     case VIR_DOMAIN_MEMORY_MODEL_LAST:
         break;
     }
@@ -15017,6 +15033,11 @@ virDomainMemoryFindByDefInternal(virDomainDef *def,
 
         case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
             if (STRNEQ(tmp->nvdimmPath, mem->nvdimmPath))
+                continue;
+            break;
+
+        case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
+            if (!virBitmapEqual(tmp->sourceNodes, mem->sourceNodes))
                 continue;
             break;
 
@@ -24606,6 +24627,15 @@ virDomainMemorySourceDefFormat(virBuffer *buf,
 
     case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
         virBufferEscapeString(&childBuf, "<path>%s</path>\n", def->nvdimmPath);
+        break;
+
+    case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
+        if (def->sourceNodes) {
+            if (!(bitmap = virBitmapFormat(def->sourceNodes)))
+                return -1;
+
+            virBufferAsprintf(&childBuf, "<nodemask>%s</nodemask>\n", bitmap);
+        }
         break;
 
     case VIR_DOMAIN_MEMORY_MODEL_NONE:
