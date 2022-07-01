@@ -231,5 +231,14 @@
     <backingStoreInput supported='yes'/>
     <backup supported='yes'/>
     <sev supported='no'/>
+    <sgx supported='yes'>
+      <flc>no</flc>
+      <sgx1>yes</sgx1>
+      <sgx2>no</sgx2>
+      <sections>
+        <section node='0' size='262144' unit='KiB'/>
+        <section node='1' size='262144' unit='KiB'/>
+      </sections>
+    </sgx>
   </features>
 </domainCapabilities>
