@@ -193,6 +193,21 @@ struct _virSEVCapability {
     unsigned int max_es_guests;
 };
 
+typedef struct _virSGXSection virSGXSection;
+struct _virSGXSection {
+    unsigned long long size;
+    unsigned int node;
+};
+
+typedef struct _virSGXCapability virSGXCapability;
+struct _virSGXCapability {
+    bool flc;
+    bool sgx1;
+    bool sgx2;
+    size_t nSgxSections;
+    virSGXSection *sgxSections;
+};
+
 typedef enum {
     VIR_DOMAIN_CAPS_FEATURE_IOTHREADS = 0,
     VIR_DOMAIN_CAPS_FEATURE_VMCOREINFO,
@@ -229,6 +244,7 @@ struct _virDomainCaps {
 
     virDomainCapsFeatureGIC gic;
     virSEVCapability *sev;
+    virSGXCapability *sgx;
     /* add new domain features here */
 
     virTristateBool features[VIR_DOMAIN_CAPS_FEATURE_LAST];
@@ -277,3 +293,8 @@ void
 virSEVCapabilitiesFree(virSEVCapability *capabilities);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virSEVCapability, virSEVCapabilitiesFree);
+
+void
+virSGXCapabilitiesFree(virSGXCapability *capabilities);
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virSGXCapability, virSGXCapabilitiesFree);
