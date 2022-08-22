@@ -655,8 +655,8 @@ Protect selected code and data from modification using hardened enclaves with
 Intel SGX.
 
 For more details on the SGX feature, please follow resources in the SGX developer's
-document store. In order to use SGX with libvirt have a look at formatdomain.rst
-Memory devices.
+document store. In order to use SGX with libvirt have a look at `SGX in domain XML
+<formatdomain.html#memory-devices>`__
 
 ``flc``
    FLC (Flexible Launch Control), not strictly part of SGX2, but was not part of
