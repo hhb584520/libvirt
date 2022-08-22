@@ -558,10 +558,10 @@ capabilities. All features occur as children of the main ``features`` element.
          <flc>no</flc>
          <sgx1>yes</sgx1>
          <sgx2>no</sgx2>
-         <section_size>2</section_size>
+         <section_size unit='KiB'>2</section_size>
          <sections>
-           <section node='0' size='1'/>
-           <section node='1' size='1'/>
+           <section node='0' size='1' unit='KiB'/>
+           <section node='1' size='1' unit='KiB'/>
          </sections>
        </sgx>
      </features>

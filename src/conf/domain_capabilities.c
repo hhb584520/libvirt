@@ -646,7 +646,8 @@ virDomainCapsFeatureSGXFormat(virBuffer *buf,
         for (i = 0; i < sgx->nsections; i++) {
             virBufferAdjustIndent(buf, 2);
             virBufferAsprintf(buf, "<section node='%d' ", sgx->sections[i].node);
-            virBufferAsprintf(buf, "size='%llu'/>\n", sgx->sections[i].size);
+            virBufferAsprintf(buf, "size='%llu' \n", sgx->sections[i].size);
+            virBufferAsprintf(buf, "unit='KiB'/>\n");
             virBufferAdjustIndent(buf, -2);
         }
         virBufferAddLit(buf, "</sections>\n");
