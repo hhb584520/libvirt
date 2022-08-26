@@ -6123,20 +6123,8 @@ qemuMonitorJSONGetSGXCapabilities(qemuMonitor *mon,
         }
     }
 
-    if (virJSONValueObjectHasKey(caps, "section-size")) {
-        unsigned long long section_size = 0;
-
-        if (virJSONValueObjectGetNumberUlong(caps, "section-size", &section_size) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("query-sgx-capabilities reply was missing 'section-size' field"));
-            return -1;
-        }
-        capability->section_size = section_size / 1024;
-    } else {
-        /* QEMU no longer reports deprecated attribute. */
-        capability->section_size = section_size_sum;
-    }
-
+    /* QEMU no longer reports deprecated attribute. */
+    capability->section_size = section_size_sum;
 
     *capabilities = g_steal_pointer(&capability);
     return 1;
