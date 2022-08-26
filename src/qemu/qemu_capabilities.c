@@ -1986,6 +1986,9 @@ virQEMUCapsSGXInfoCopy(virSGXCapability **dst,
         memcpy(tmp->sections, src->sections,
                src->nsections * sizeof(*tmp->sections));
         tmp->nsections = src->nsections;
+    } else {
+        *dst = NULL;
+        return 0;
     }
 
     *dst = g_steal_pointer(&tmp);
